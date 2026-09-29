@@ -4172,7 +4172,7 @@ Saint-Fargeau-Ponthierry
 
 <script>
 (() => {
-
+  console.log("SCRIPT GRAPHE EXECUTE");
   const data =
     ${JSON.stringify(
       debitGraph
