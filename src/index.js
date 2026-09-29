@@ -1534,7 +1534,11 @@ async function collecteEtStockage(env) {
   const total =
     montereau.debit +
     episy.debit;
-
+ 
+  const saintFargeau =
+    await getDebit(
+      "F447000302"
+    );
 
   const sgl = {
 
@@ -1924,7 +1928,91 @@ async function collecteEtStockage(env) {
       historiqueDebit
     )
   );
+  // --------------------------------------------------
+  // HISTORIQUE DEBIT SAINT-FARGEAU-PONTHIERRY
+  // --------------------------------------------------
 
+  let historiqueSaintFargeau =
+    await env[
+      "HYDRO-CHARTDATA"
+    ].get(
+      "saint_fargeau_history",
+      "json"
+    );
+
+  if (
+    !Array.isArray(
+      historiqueSaintFargeau
+    )
+  ) {
+
+    historiqueSaintFargeau = [];
+
+  }
+
+
+  const nouvelleMesureSaintFargeau = {
+
+    t:
+      heure.toISOString(),
+
+    debit:
+      saintFargeau.debit
+
+  };
+
+
+  const indexExistanteSaintFargeau =
+    historiqueSaintFargeau.findIndex(
+      m =>
+        m.t ===
+        nouvelleMesureSaintFargeau.t
+    );
+
+
+  if (
+    indexExistanteSaintFargeau >= 0
+  ) {
+
+    historiqueSaintFargeau[
+      indexExistanteSaintFargeau
+    ] =
+      nouvelleMesureSaintFargeau;
+
+  } else {
+
+    historiqueSaintFargeau.push(
+      nouvelleMesureSaintFargeau
+    );
+
+  }
+
+
+  historiqueSaintFargeau =
+    historiqueSaintFargeau
+      .filter(
+        m =>
+          new Date(
+            m.t
+          ).getTime() >=
+          limiteDebit
+      )
+      .sort(
+        (a, b) =>
+          new Date(a.t).getTime() -
+          new Date(b.t).getTime()
+      )
+      .slice(-720);
+
+
+  await env[
+    "HYDRO-CHARTDATA"
+  ].put(
+    "saint_fargeau_history",
+    JSON.stringify(
+      historiqueSaintFargeau
+    )
+  );
 
    // --------------------------------------------------
   // AROME
@@ -2136,7 +2224,25 @@ async function afficherPage(env) {
     )
       ? historiqueDebit
       : [];
+  // --------------------------------------------------
+  // HISTORIQUE SAINT-FARGEAU-PONTHIERRY
+  // --------------------------------------------------
 
+  const historiqueSaintFargeau =
+    await env[
+      "HYDRO-CHARTDATA"
+    ].get(
+      "saint_fargeau_history",
+      "json"
+    );
+
+
+  const saintFargeauGraph =
+    Array.isArray(
+      historiqueSaintFargeau
+    )
+      ? historiqueSaintFargeau
+      : [];
 
   // --------------------------------------------------
   // PREVISIONS
@@ -2153,6 +2259,7 @@ async function afficherPage(env) {
     mesure,
     radar,
     debitGraph,
+    saintFargeauGraph,
     previsions
   );
 
@@ -2257,6 +2364,7 @@ function pageAvecMesure(
   mesure,
   radar,
   debitGraph,
+  saintFargeauGraph,
   previsions
 ) {
 
@@ -2703,22 +2811,19 @@ ${sgl?.erreur ||
   }
 
 
-  // ==================================================
-  // GRAPHE DEBIT
-  // ==================================================
+// ==================================================
+// GRAPHE DEBIT — CHARTRETTES + SAINT-FARGEAU
+// ==================================================
 
-  const graph =
-    (() => {
+const graph =
+  (() => {
 
-      if (
-        !Array.isArray(
-          debitGraph
-        ) ||
-        debitGraph.length < 2
-      ) {
+    if (
+      !Array.isArray(debitGraph) ||
+      debitGraph.length < 2
+    ) {
 
-        return `
-
+      return `
 <text
   x="400"
   y="130"
@@ -2726,76 +2831,144 @@ ${sgl?.erreur ||
   fill="#777"
   font-size="14"
 >
-
 Données insuffisantes
-
 </text>
-
 `;
 
-      }
+    }
 
 
-      const largeur =
-        800;
+    const largeur = 800;
+    const hauteur = 260;
 
-      const hauteur =
-        260;
+    const margeGauche = 55;
+    const margeDroite = 15;
+    const margeHaut = 15;
+    const margeBas = 30;
 
-      const margeGauche =
-        55;
+    const graphW =
+      largeur -
+      margeGauche -
+      margeDroite;
 
-      const margeDroite =
-        15;
-
-      const margeHaut =
-        15;
-
-      const margeBas =
-        30;
-
-      const graphW =
-        largeur -
-        margeGauche -
-        margeDroite;
-
-      const graphH =
-        hauteur -
-        margeHaut -
-        margeBas;
+    const graphH =
+      hauteur -
+      margeHaut -
+      margeBas;
 
 
-      const valeurs =
-        debitGraph.map(
-          p =>
-            Number(
-              p.debit
-            )
-        );
+    // --------------------------------------------------
+    // DONNEES CHARTRETTES
+    // --------------------------------------------------
+
+    const valeursChartrettes =
+      debitGraph.map(
+        p =>
+          Number(p.debit)
+      );
 
 
-      const minDebit =
-        Math.min(
-          ...valeurs
-        );
+    // --------------------------------------------------
+    // DONNEES SAINT-FARGEAU
+    // --------------------------------------------------
+
+    const valeursSaintFargeau =
+      Array.isArray(saintFargeauGraph)
+        ? saintFargeauGraph.map(
+            p =>
+              Number(p.debit)
+          )
+        : [];
 
 
-      const maxDebit =
-        Math.max(
-          ...valeurs
-        );
+    // --------------------------------------------------
+    // ECHELLE COMMUNE
+    // --------------------------------------------------
+
+    const toutesLesValeurs =
+      [
+        ...valeursChartrettes,
+        ...valeursSaintFargeau
+      ];
 
 
-      const amplitude =
-        Math.max(
-          maxDebit -
-          minDebit,
-          1
-        );
+    const minDebit =
+      Math.min(
+        ...toutesLesValeurs
+      );
 
 
-      const points =
-        debitGraph
+    const maxDebit =
+      Math.max(
+        ...toutesLesValeurs
+      );
+
+
+    const amplitude =
+      Math.max(
+        maxDebit -
+        minDebit,
+        1
+      );
+
+
+    // --------------------------------------------------
+    // COURBE CHARTRETTES
+    // --------------------------------------------------
+
+    const pointsChartrettes =
+      debitGraph
+        .map(
+          (p, i) => {
+
+            const x =
+              margeGauche +
+              (
+                i /
+                (
+                  debitGraph.length -
+                  1
+                )
+              ) *
+              graphW;
+
+
+            const y =
+              margeHaut +
+              graphH -
+              (
+                (
+                  Number(p.debit) -
+                  minDebit
+                ) /
+                amplitude
+              ) *
+              graphH;
+
+
+            return (
+              `${x.toFixed(1)},` +
+              `${y.toFixed(1)}`
+            );
+
+          }
+        )
+        .join(" ");
+
+
+    // --------------------------------------------------
+    // COURBE SAINT-FARGEAU
+    // --------------------------------------------------
+
+    let pointsSaintFargeau = "";
+
+
+    if (
+      valeursSaintFargeau.length >= 2
+    ) {
+
+      pointsSaintFargeau =
+        saintFargeauGraph
           .map(
             (p, i) => {
 
@@ -2804,7 +2977,7 @@ Données insuffisantes
                 (
                   i /
                   (
-                    debitGraph.length -
+                    saintFargeauGraph.length -
                     1
                   )
                 ) *
@@ -2816,9 +2989,7 @@ Données insuffisantes
                 graphH -
                 (
                   (
-                    Number(
-                      p.debit
-                    ) -
+                    Number(p.debit) -
                     minDebit
                   ) /
                   amplitude
@@ -2835,8 +3006,10 @@ Données insuffisantes
           )
           .join(" ");
 
+    }
 
-      return `
+
+    return `
 
 <line
   x1="${margeGauche}"
@@ -2856,6 +3029,8 @@ Données insuffisantes
 />
 
 
+<!-- ECHELLE MIN -->
+
 <text
   x="${margeGauche - 8}"
   y="${margeHaut + graphH}"
@@ -2864,11 +3039,11 @@ Données insuffisantes
   font-size="11"
   fill="#666"
 >
-
 ${minDebit.toFixed(0)}
-
 </text>
 
+
+<!-- ECHELLE MAX -->
 
 <text
   x="${margeGauche - 8}"
@@ -2878,19 +3053,37 @@ ${minDebit.toFixed(0)}
   font-size="11"
   fill="#666"
 >
-
 ${maxDebit.toFixed(0)}
-
 </text>
 
 
+<!-- COURBE CHARTRETTES -->
+
 <polyline
-  points="${points}"
+  points="${pointsChartrettes}"
   fill="none"
   stroke="#1976d2"
-  stroke-width="1.5"
+  stroke-width="2"
 />
 
+
+<!-- COURBE SAINT-FARGEAU -->
+
+${
+  pointsSaintFargeau
+    ? `
+<polyline
+  points="${pointsSaintFargeau}"
+  fill="none"
+  stroke="#e67e22"
+  stroke-width="2"
+/>
+`
+    : ""
+}
+
+
+<!-- ZONE INTERACTIVE -->
 
 <rect
   id="debitHitbox"
@@ -2902,6 +3095,8 @@ ${maxDebit.toFixed(0)}
   style="cursor:crosshair"
 />
 
+
+<!-- GUIDE -->
 
 <line
   id="debitGuide"
@@ -2915,6 +3110,8 @@ ${maxDebit.toFixed(0)}
 />
 
 
+<!-- POINT CHARTRETTES -->
+
 <circle
   id="debitPoint"
   cx="0"
@@ -2925,19 +3122,31 @@ ${maxDebit.toFixed(0)}
 />
 
 
+<!-- POINT SAINT-FARGEAU -->
+
+<circle
+  id="saintFargeauPoint"
+  cx="0"
+  cy="0"
+  r="4"
+  fill="#e67e22"
+  visibility="hidden"
+/>
+
+
+<!-- DATES -->
+
 <text
   x="${margeGauche}"
   y="${hauteur - 8}"
   font-size="11"
   fill="#666"
 >
-
 ${new Date(
   debitGraph[0].t
 ).toLocaleDateString(
   "fr-FR"
 )}
-
 </text>
 
 
@@ -2948,7 +3157,6 @@ ${new Date(
   font-size="11"
   fill="#666"
 >
-
 ${new Date(
   debitGraph[
     debitGraph.length - 1
@@ -2956,12 +3164,11 @@ ${new Date(
 ).toLocaleDateString(
   "fr-FR"
 )}
-
 </text>
 
 `;
 
-    })();
+  })();
 
 
   // ==================================================
@@ -3848,7 +4055,7 @@ ${blocSGL}
 <div class="card graph-card">
 
 <h2>
-Débit — 30 derniers jours
+Débits — 30 derniers jours
 </h2>
 
 
