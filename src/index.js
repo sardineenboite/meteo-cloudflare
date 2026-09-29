@@ -3092,6 +3092,7 @@ ${
   width="${graphW}"
   height="${graphH}"
   fill="transparent"
+  pointer-events="all"
   style="cursor:crosshair"
 />
 
@@ -3107,6 +3108,7 @@ ${
   stroke="#999"
   stroke-dasharray="4 4"
   visibility="hidden"
+  pointer-events="none"
 />
 
 
@@ -3119,6 +3121,7 @@ ${
   r="4"
   fill="#1976d2"
   visibility="hidden"
+  pointer-events="none"
 />
 
 <circle
@@ -3128,6 +3131,7 @@ ${
   r="4"
   fill="#e67e22"
   visibility="hidden"
+  pointer-events="none"
 />
 
 
