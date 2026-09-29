@@ -3121,17 +3121,15 @@ ${
   visibility="hidden"
 />
 
-
-<!-- POINT SAINT-FARGEAU -->
-
 <circle
-  id="saintFargeauPoint"
+  id="debitPointSaintFargeau"
   cx="0"
   cy="0"
   r="4"
   fill="#e67e22"
   visibility="hidden"
 />
+
 
 
 <!-- DATES -->
@@ -4169,12 +4167,16 @@ Saint-Fargeau-Ponthierry
 
 
 <script>
-
 (() => {
 
   const data =
     ${JSON.stringify(
       debitGraph
+    )};
+
+  const dataSaintFargeau =
+    ${JSON.stringify(
+      saintFargeauGraph
     )};
 
 
@@ -4183,24 +4185,25 @@ Saint-Fargeau-Ponthierry
       "debitGraph"
     );
 
-
   const hitbox =
     document.getElementById(
       "debitHitbox"
     );
-
 
   const point =
     document.getElementById(
       "debitPoint"
     );
 
+  const pointSaintFargeau =
+    document.getElementById(
+      "debitPointSaintFargeau"
+    );
 
   const guide =
     document.getElementById(
       "debitGuide"
     );
-
 
   const tooltip =
     document.getElementById(
@@ -4213,29 +4216,17 @@ Saint-Fargeau-Ponthierry
     !hitbox ||
     !data.length
   ) {
-
     return;
-
   }
 
 
-  const largeur =
-    800;
+  const largeur = 800;
+  const hauteur = 260;
 
-  const hauteur =
-    260;
-
-  const margeGauche =
-    55;
-
-  const margeDroite =
-    15;
-
-  const margeHaut =
-    15;
-
-  const margeBas =
-    30;
+  const margeGauche = 55;
+  const margeDroite = 15;
+  const margeHaut = 15;
+  const margeBas = 30;
 
 
   const graphW =
@@ -4243,19 +4234,29 @@ Saint-Fargeau-Ponthierry
     margeGauche -
     margeDroite;
 
-
   const graphH =
     hauteur -
     margeHaut -
     margeBas;
 
 
-  const valeurs =
-    data.map(
+  // --------------------------------------------------
+  // MIN / MAX DES DEUX COURBES
+  // --------------------------------------------------
+
+  const valeurs = [
+    ...data,
+    ...dataSaintFargeau
+  ]
+    .map(
       p =>
         Number(
           p.debit
         )
+    )
+    .filter(
+      v =>
+        Number.isFinite(v)
     );
 
 
@@ -4264,12 +4265,10 @@ Saint-Fargeau-Ponthierry
       ...valeurs
     );
 
-
   const maxDebit =
     Math.max(
       ...valeurs
     );
-
 
   const amplitude =
     Math.max(
@@ -4279,10 +4278,18 @@ Saint-Fargeau-Ponthierry
     );
 
 
+  // --------------------------------------------------
+  // AFFICHAGE DU SURVOL
+  // --------------------------------------------------
+
   function afficher(index) {
 
     const p =
       data[index];
+
+    if (!p) {
+      return;
+    }
 
 
     const x =
@@ -4296,6 +4303,10 @@ Saint-Fargeau-Ponthierry
       ) *
       graphW;
 
+
+    // ------------------------------------------------
+    // POINT CHARTRETTES
+    // ------------------------------------------------
 
     const y =
       margeHaut +
@@ -4317,18 +4328,73 @@ Saint-Fargeau-Ponthierry
       x
     );
 
-
     point.setAttribute(
       "cy",
       y
     );
 
 
+    // ------------------------------------------------
+    // POINT SAINT-FARGEAU
+    // ------------------------------------------------
+
+    const pSF =
+      dataSaintFargeau.find(
+        q =>
+          q.t === p.t
+      );
+
+
+    if (pSF) {
+
+      const ySF =
+        margeHaut +
+        graphH -
+        (
+          (
+            Number(
+              pSF.debit
+            ) -
+            minDebit
+          ) /
+          amplitude
+        ) *
+        graphH;
+
+
+      pointSaintFargeau.setAttribute(
+        "cx",
+        x
+      );
+
+      pointSaintFargeau.setAttribute(
+        "cy",
+        ySF
+      );
+
+      pointSaintFargeau.setAttribute(
+        "visibility",
+        "visible"
+      );
+
+    } else {
+
+      pointSaintFargeau.setAttribute(
+        "visibility",
+        "hidden"
+      );
+
+    }
+
+
+    // ------------------------------------------------
+    // GUIDE VERTICAL
+    // ------------------------------------------------
+
     guide.setAttribute(
       "x1",
       x
     );
-
 
     guide.setAttribute(
       "x2",
@@ -4341,12 +4407,15 @@ Saint-Fargeau-Ponthierry
       "visible"
     );
 
-
     guide.setAttribute(
       "visibility",
       "visible"
     );
 
+
+    // ------------------------------------------------
+    // DATE
+    // ------------------------------------------------
 
     const date =
       new Date(
@@ -4354,7 +4423,6 @@ Saint-Fargeau-Ponthierry
       ).toLocaleString(
         "fr-FR",
         {
-
           day:
             "2-digit",
 
@@ -4369,23 +4437,54 @@ Saint-Fargeau-Ponthierry
 
           minute:
             "2-digit"
-
         }
       );
 
 
-    tooltip.innerHTML =
+    // ------------------------------------------------
+    // INFOS
+    // ------------------------------------------------
 
+    let texteSaintFargeau =
+      "—";
+
+    if (pSF) {
+
+      texteSaintFargeau =
+        Number(
+          pSF.debit
+        ).toFixed(1) +
+        " m³/s";
+
+    }
+
+
+    tooltip.innerHTML =
       "<strong>" +
       date +
       "</strong><br>" +
 
-      "Débit : " +
+      "<span style=\"color:#1976d2\">" +
+      "●" +
+      "</span> " +
+
+      "Chartrettes : " +
       Number(
         p.debit
       ).toFixed(1) +
-      " m³/s";
+      " m³/s<br>" +
 
+      "<span style=\"color:#e67e22\">" +
+      "●" +
+      "</span> " +
+
+      "Saint-Fargeau-Ponthierry : " +
+      texteSaintFargeau;
+
+
+    // ------------------------------------------------
+    // POSITION TOOLTIP
+    // ------------------------------------------------
 
     const rect =
       svg.getBoundingClientRect();
@@ -4414,10 +4513,8 @@ Saint-Fargeau-Ponthierry
     tooltip.style.display =
       "block";
 
-
     tooltip.style.left =
       "0px";
-
 
     tooltip.style.top =
       "0px";
@@ -4425,7 +4522,6 @@ Saint-Fargeau-Ponthierry
 
     const tw =
       tooltip.offsetWidth;
-
 
     const th =
       tooltip.offsetHeight;
@@ -4504,12 +4600,15 @@ Saint-Fargeau-Ponthierry
     tooltip.style.left =
       left + "px";
 
-
     tooltip.style.top =
       top + "px";
 
   }
 
+
+  // --------------------------------------------------
+  // MASQUER
+  // --------------------------------------------------
 
   function masquer() {
 
@@ -4518,18 +4617,25 @@ Saint-Fargeau-Ponthierry
       "hidden"
     );
 
+    pointSaintFargeau.setAttribute(
+      "visibility",
+      "hidden"
+    );
 
     guide.setAttribute(
       "visibility",
       "hidden"
     );
 
-
     tooltip.style.display =
       "none";
 
   }
 
+
+  // --------------------------------------------------
+  // POSITION SOURIS
+  // --------------------------------------------------
 
   function positionDepuisEvenement(
     event
@@ -4573,7 +4679,9 @@ Saint-Fargeau-Ponthierry
       );
 
 
-    afficher(index);
+    afficher(
+      index
+    );
 
   }
 
@@ -4631,7 +4739,6 @@ Saint-Fargeau-Ponthierry
 
 
 })();
-
 </script>
 
 
