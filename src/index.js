@@ -4690,57 +4690,56 @@ Saint-Fargeau-Ponthierry
   }
 
 
-  hitbox.addEventListener(
-    "mousemove",
-    positionDepuisEvenement
-  );
+  svg.addEventListener(
+  "mousemove",
+  positionDepuisEvenement
+);
 
 
-  hitbox.addEventListener(
-    "mouseleave",
-    masquer
-  );
+svg.addEventListener(
+  "mouseleave",
+  masquer
+);
 
 
-  hitbox.addEventListener(
-    "touchstart",
-    event => {
+svg.addEventListener(
+  "touchstart",
+  event => {
 
-      event.preventDefault();
+    event.preventDefault();
 
-      positionDepuisEvenement(
-        event.touches[0]
-      );
+    positionDepuisEvenement(
+      event.touches[0]
+    );
 
-    },
-    {
-      passive:false
-    }
-  );
-
-
-  hitbox.addEventListener(
-    "touchmove",
-    event => {
-
-      event.preventDefault();
-
-      positionDepuisEvenement(
-        event.touches[0]
-      );
-
-    },
-    {
-      passive:false
-    }
-  );
+  },
+  {
+    passive:false
+  }
+);
 
 
-  hitbox.addEventListener(
-    "touchend",
-    masquer
-  );
+svg.addEventListener(
+  "touchmove",
+  event => {
 
+    event.preventDefault();
+
+    positionDepuisEvenement(
+      event.touches[0]
+    );
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+svg.addEventListener(
+  "touchend",
+  masquer
+);
 
 })();
 </script>
