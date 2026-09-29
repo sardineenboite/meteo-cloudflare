@@ -4081,17 +4081,17 @@ Débits — 30 derniers jours
 ${graph}
 
 <line
-  x1="570"
-  y1="15"
-  x2="590"
-  y2="15"
+  x1="70"
+  y1="12"
+  x2="90"
+  y2="12"
   stroke="#1976d2"
   stroke-width="3"
 />
 
 <text
-  x="596"
-  y="19"
+  x="96"
+  y="16"
   font-size="11"
   fill="#555"
 >
@@ -4099,17 +4099,17 @@ Chartrettes
 </text>
 
 <line
-  x1="670"
-  y1="15"
-  x2="690"
-  y2="15"
+  x1="190"
+  y1="12"
+  x2="210"
+  y2="12"
   stroke="#e67e22"
   stroke-width="3"
 />
 
 <text
-  x="696"
-  y="19"
+  x="216"
+  y="16"
   font-size="11"
   fill="#555"
 >
