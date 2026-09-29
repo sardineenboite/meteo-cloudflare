@@ -1910,14 +1910,16 @@ async function collecteEtStockage(env) {
       .slice(-720);
 
 
-  await env[
+   await env[
     "HYDRO-CHARTDATA"
   ].put(
-    "debit_history",
+    "saint_fargeau_history",
     JSON.stringify(
-      historiqueDebit
+      historiqueSaintFargeau
     )
   );
+
+
   // --------------------------------------------------
   // RADAR
   // --------------------------------------------------
@@ -1948,93 +1950,9 @@ async function collecteEtStockage(env) {
     );
 
   }
+
+
   // --------------------------------------------------
-  // HISTORIQUE DEBIT SAINT-FARGEAU-PONTHIERRY
-  // --------------------------------------------------
-
-  let historiqueSaintFargeau =
-    await env[
-      "HYDRO-CHARTDATA"
-    ].get(
-      "saint_fargeau_history",
-      "json"
-    );
-
-  if (
-    !Array.isArray(
-      historiqueSaintFargeau
-    )
-  ) {
-
-    historiqueSaintFargeau = [];
-
-  }
-
-
-  const nouvelleMesureSaintFargeau = {
-
-    t:
-      heure.toISOString(),
-
-    debit:
-      saintFargeau.debit
-
-  };
-
-
-  const indexExistanteSaintFargeau =
-    historiqueSaintFargeau.findIndex(
-      m =>
-        m.t ===
-        nouvelleMesureSaintFargeau.t
-    );
-
-
-  if (
-    indexExistanteSaintFargeau >= 0
-  ) {
-
-    historiqueSaintFargeau[
-      indexExistanteSaintFargeau
-    ] =
-      nouvelleMesureSaintFargeau;
-
-  } else {
-
-    historiqueSaintFargeau.push(
-      nouvelleMesureSaintFargeau
-    );
-
-  }
-
-
-  historiqueSaintFargeau =
-    historiqueSaintFargeau
-      .filter(
-        m =>
-          new Date(
-            m.t
-          ).getTime() >=
-          limiteDebit
-      )
-      .sort(
-        (a, b) =>
-          new Date(a.t).getTime() -
-          new Date(b.t).getTime()
-      )
-      .slice(-720);
-
-
-  await env[
-    "HYDRO-CHARTDATA"
-  ].put(
-    "saint_fargeau_history",
-    JSON.stringify(
-      historiqueSaintFargeau
-    )
-  );
-
-   // --------------------------------------------------
   // AROME
   // --------------------------------------------------
 
