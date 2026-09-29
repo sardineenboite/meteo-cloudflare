@@ -4082,7 +4082,42 @@ Débits — 30 derniers jours
 ${graph}
 
 </svg>
+</svg>
 
+<div style="
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  margin-top:5px;
+  font-size:12px;
+">
+  <span>
+    <span style="
+      display:inline-block;
+      width:20px;
+      height:3px;
+      background:#1976d2;
+      vertical-align:middle;
+      margin-right:5px;
+    "></span>
+    Chartrettes
+  </span>
+
+  <span>
+    <span style="
+      display:inline-block;
+      width:20px;
+      height:3px;
+      background:#e67e22;
+      vertical-align:middle;
+      margin-right:5px;
+    "></span>
+    Saint-Fargeau-Ponthierry
+  </span>
+</div>
+
+<div
+  id="debitTooltip"
 
 <div
   id="debitTooltip"
