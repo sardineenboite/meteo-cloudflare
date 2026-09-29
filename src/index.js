@@ -2003,7 +2003,100 @@ async function collecteEtStockage(env) {
       historiqueSaintFargeau
     )
   );
+  // --------------------------------------------------
+  // RADAR
+  // --------------------------------------------------
 
+  console.log(
+    "AVANT RADAR"
+  );
+
+  try {
+
+    console.log(
+      "RADAR START"
+    );
+
+    await collecteRadar(
+      env
+    );
+
+    console.log(
+      "RADAR FIN"
+    );
+
+  } catch (error) {
+
+    console.log(
+      "ERREUR RADAR",
+      error.message
+    );
+
+  }
+
+
+  // --------------------------------------------------
+  // AROME
+  // --------------------------------------------------
+
+  console.log(
+    "AVANT AROME"
+  );
+
+  try {
+
+    console.log(
+      "AROME START"
+    );
+
+    await collectePrevisionsAROME(
+      env
+    );
+
+    console.log(
+      "AROME FIN"
+    );
+
+  } catch (error) {
+
+    console.log(
+      "ERREUR AROME",
+      error.message
+    );
+
+  }
+
+
+  // --------------------------------------------------
+  // ARPEGE
+  // --------------------------------------------------
+
+  console.log(
+    "AVANT ARPEGE"
+  );
+
+  try {
+
+    console.log(
+      "ARPEGE START"
+    );
+
+    await collectePrevisionsARPEGE(
+      env
+    );
+
+    console.log(
+      "ARPEGE FIN"
+    );
+
+  } catch (error) {
+
+    console.log(
+      "ERREUR ARPEGE",
+      error.message
+    );
+
+  }
 }
 
 
