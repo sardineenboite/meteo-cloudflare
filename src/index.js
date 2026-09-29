@@ -100,19 +100,9 @@ export default {
 
     let job;
 
-    if (event.cron === "*/5 * * * *") {
+console.log("CRON COLLECTE");
 
-      console.log("CRON RADAR");
-
-      job = collecteRadar(env);
-
-    } else {
-
-      console.log("CRON COLLECTE");
-
-      job = collecteEtStockage(env);
-
-    }
+job = collecteEtStockage(env);
 
     ctx.waitUntil(
       job.catch(error => {
@@ -1928,6 +1918,36 @@ async function collecteEtStockage(env) {
       historiqueDebit
     )
   );
+  // --------------------------------------------------
+  // RADAR
+  // --------------------------------------------------
+
+  console.log(
+    "AVANT RADAR"
+  );
+
+  try {
+
+    console.log(
+      "RADAR START"
+    );
+
+    await collecteRadar(
+      env
+    );
+
+    console.log(
+      "RADAR FIN"
+    );
+
+  } catch (error) {
+
+    console.log(
+      "ERREUR RADAR",
+      error.message
+    );
+
+  }
   // --------------------------------------------------
   // HISTORIQUE DEBIT SAINT-FARGEAU-PONTHIERRY
   // --------------------------------------------------
