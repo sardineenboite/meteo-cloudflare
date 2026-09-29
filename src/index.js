@@ -1813,7 +1813,7 @@ async function collecteEtStockage(env) {
   };
 
 
-  // --------------------------------------------------
+   // --------------------------------------------------
   // STOCKAGE
   // --------------------------------------------------
 
@@ -1910,7 +1910,92 @@ async function collecteEtStockage(env) {
       .slice(-720);
 
 
-   await env[
+  await env[
+    "HYDRO-CHARTDATA"
+  ].put(
+    "debit_history",
+    JSON.stringify(
+      historiqueDebit
+    )
+  );
+
+
+  // --------------------------------------------------
+  // HISTORIQUE DEBIT SAINT-FARGEAU-PONTHIERRY
+  // --------------------------------------------------
+
+  let historiqueSaintFargeau =
+    await env[
+      "HYDRO-CHARTDATA"
+    ].get(
+      "saint_fargeau_history",
+      "json"
+    );
+
+
+  if (
+    !Array.isArray(
+      historiqueSaintFargeau
+    )
+  ) {
+
+    historiqueSaintFargeau = [];
+
+  }
+
+
+  const nouvelleMesureSaintFargeau = {
+    t:
+      heure.toISOString(),
+    debit:
+      saintFargeau.debit
+  };
+
+
+  const indexExistanteSaintFargeau =
+    historiqueSaintFargeau.findIndex(
+      m =>
+        m.t ===
+        nouvelleMesureSaintFargeau.t
+    );
+
+
+  if (
+    indexExistanteSaintFargeau >= 0
+  ) {
+
+    historiqueSaintFargeau[
+      indexExistanteSaintFargeau
+    ] =
+      nouvelleMesureSaintFargeau;
+
+  } else {
+
+    historiqueSaintFargeau.push(
+      nouvelleMesureSaintFargeau
+    );
+
+  }
+
+
+  historiqueSaintFargeau =
+    historiqueSaintFargeau
+      .filter(
+        m =>
+          new Date(
+            m.t
+          ).getTime() >=
+          limiteDebit
+      )
+      .sort(
+        (a, b) =>
+          new Date(a.t).getTime() -
+          new Date(b.t).getTime()
+      )
+      .slice(-720);
+
+
+  await env[
     "HYDRO-CHARTDATA"
   ].put(
     "saint_fargeau_history",
@@ -1919,103 +2004,9 @@ async function collecteEtStockage(env) {
     )
   );
 
-
-  // --------------------------------------------------
-  // RADAR
-  // --------------------------------------------------
-
-  console.log(
-    "AVANT RADAR"
-  );
-
-  try {
-
-    console.log(
-      "RADAR START"
-    );
-
-    await collecteRadar(
-      env
-    );
-
-    console.log(
-      "RADAR FIN"
-    );
-
-  } catch (error) {
-
-    console.log(
-      "ERREUR RADAR",
-      error.message
-    );
-
-  }
-
-
-  // --------------------------------------------------
-  // AROME
-  // --------------------------------------------------
-
-  console.log(
-    "AVANT AROME"
-  );
-
-  try {
-
-    console.log(
-      "AROME START"
-    );
-
-    await collectePrevisionsAROME(
-      env
-    );
-
-    console.log(
-      "AROME FIN"
-    );
-
-  } catch (error) {
-
-    console.log(
-      "ERREUR AROME",
-      error.message
-    );
-
-  }
-
-
-  // --------------------------------------------------
-  // ARPEGE
-  // --------------------------------------------------
-
-  console.log(
-    "AVANT ARPEGE"
-  );
-
-  try {
-
-    console.log(
-      "ARPEGE START"
-    );
-
-    await collectePrevisionsARPEGE(
-      env
-    );
-
-    console.log(
-      "ARPEGE FIN"
-    );
-
-  } catch (error) {
-
-    console.log(
-      "ERREUR ARPEGE",
-      error.message
-    );
-
-  }
-
 }
+
+
 // ==================================================
 // AFFICHAGE
 // ==================================================
@@ -2162,6 +2153,8 @@ async function afficherPage(env) {
     )
       ? historiqueDebit
       : [];
+
+
   // --------------------------------------------------
   // HISTORIQUE SAINT-FARGEAU-PONTHIERRY
   // --------------------------------------------------
@@ -2181,6 +2174,7 @@ async function afficherPage(env) {
     )
       ? historiqueSaintFargeau
       : [];
+
 
   // --------------------------------------------------
   // PREVISIONS
@@ -2202,8 +2196,6 @@ async function afficherPage(env) {
   );
 
 }
-
-
 // ==================================================
 // PAGE VIDE
 // ==================================================
