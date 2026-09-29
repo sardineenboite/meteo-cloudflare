@@ -4080,40 +4080,44 @@ Débits — 30 derniers jours
 
 ${graph}
 
+<line
+  x1="570"
+  y1="15"
+  x2="590"
+  y2="15"
+  stroke="#1976d2"
+  stroke-width="3"
+/>
+
+<text
+  x="596"
+  y="19"
+  font-size="11"
+  fill="#555"
+>
+Chartrettes
+</text>
+
+<line
+  x1="670"
+  y1="15"
+  x2="690"
+  y2="15"
+  stroke="#e67e22"
+  stroke-width="3"
+/>
+
+<text
+  x="696"
+  y="19"
+  font-size="11"
+  fill="#555"
+>
+Saint-Fargeau-Ponthierry
+</text>
+
 </svg>
 
-
-<div style="
-  display:flex;
-  gap:20px;
-  justify-content:center;
-  margin-top:5px;
-  font-size:12px;
-">
-  <span>
-    <span style="
-      display:inline-block;
-      width:20px;
-      height:3px;
-      background:#1976d2;
-      vertical-align:middle;
-      margin-right:5px;
-    "></span>
-    Chartrettes
-  </span>
-
-  <span>
-    <span style="
-      display:inline-block;
-      width:20px;
-      height:3px;
-      background:#e67e22;
-      vertical-align:middle;
-      margin-right:5px;
-    "></span>
-    Saint-Fargeau-Ponthierry
-  </span>
-</div>
 
 
 <div
