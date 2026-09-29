@@ -4463,27 +4463,27 @@ Saint-Fargeau-Ponthierry
     }
 
 
-    tooltip.innerHTML =
-      "<strong>" +
-      date +
-      "</strong><br>" +
+tooltip.innerHTML =
+  "<strong>" +
+  date +
+  "</strong><br>" +
 
-      "<span style=\"color:#1976d2\">" +
-      "●" +
-      "</span> " +
+  "<span style='color:#1976d2'>" +
+  "●" +
+  "</span> " +
 
-      "Chartrettes : " +
-      Number(
-        p.debit
-      ).toFixed(1) +
-      " m³/s<br>" +
+  "Chartrettes : " +
+  Number(
+    p.debit
+  ).toFixed(1) +
+  " m³/s<br>" +
 
-      "<span style=\"color:#e67e22\">" +
-      "●" +
-      "</span> " +
+  "<span style='color:#e67e22'>" +
+  "●" +
+  "</span> " +
 
-      "Saint-Fargeau-Ponthierry : " +
-      texteSaintFargeau;
+  "Saint-Fargeau-Ponthierry : " +
+  texteSaintFargeau;
 
 
     // ------------------------------------------------
