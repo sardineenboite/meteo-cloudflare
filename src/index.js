@@ -4051,7 +4051,6 @@ ${blocSGL}
 <!-- ============================================== -->
 <!-- GRAPHE -->
 <!-- ============================================== -->
-
 <div class="card graph-card">
 
 <h2>
@@ -4082,7 +4081,7 @@ Débits — 30 derniers jours
 ${graph}
 
 </svg>
-</svg>
+
 
 <div style="
   display:flex;
@@ -4116,8 +4115,6 @@ ${graph}
   </span>
 </div>
 
-<div
-  id="debitTooltip"
 
 <div
   id="debitTooltip"
