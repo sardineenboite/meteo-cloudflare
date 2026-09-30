@@ -2878,7 +2878,41 @@ Données insuffisantes
       hauteur -
       margeHaut -
       margeBas;
+    const tempsDebut =
+      new Date(
+        debitGraph[0].t
+      ).getTime();
 
+    const tempsFin =
+      new Date(
+        debitGraph[
+          debitGraph.length - 1
+        ].t
+      ).getTime();
+
+    const dureeTemps =
+      Math.max(
+        tempsFin - tempsDebut,
+        1
+      );
+
+    function positionX(date) {
+
+      const temps =
+        new Date(
+          date
+        ).getTime();
+
+      return (
+        margeGauche +
+        (
+          (temps - tempsDebut) /
+          dureeTemps
+        ) *
+        graphW
+      );
+
+    }
 
     // --------------------------------------------------
     // DONNEES CHARTRETTES
@@ -2944,16 +2978,8 @@ Données insuffisantes
         .map(
           (p, i) => {
 
-            const x =
-              margeGauche +
-              (
-                i /
-                (
-                  debitGraph.length -
-                  1
-                )
-              ) *
-              graphW;
+            const x = 
+              positionX(p.t);
 
 
             const y =
@@ -2996,15 +3022,7 @@ Données insuffisantes
             (p, i) => {
 
               const x =
-                margeGauche +
-                (
-                  i /
-                  (
-                    saintFargeauGraph.length -
-                    1
-                  )
-                ) *
-                graphW;
+                positionX(p.t);
 
 
               const y =
